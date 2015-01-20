@@ -604,7 +604,7 @@
 	<hr />
 	<div class="row">
 #* 			*##end##
-		<div class="span4">
+		<div class="col-md-4">
 #*			*##if ( $tocSidebar )#*
 				*##tocSidebarContent ()
 #*			*##end##
@@ -622,10 +622,10 @@
 	<div class="row">
 #* 				*##if ( $hasSidebar || $tocSidebar )#*
 					// has a sidebar - take part width
-*#		<div class="span8">
+*#		<div class="col-md-8">
 #*	 			*##else#*
 					// no sidebar - take full width
-*#		<div class="span12">
+*#		<div class="col-md-12">
 #* 				*##end##
 			<div class="body-content">
 #* 			*##else#*
@@ -673,12 +673,12 @@
  *###
 #macro ( thumbs $colCount $subsections )##
 	<div class="row thumbnail-row">
-		<div class="span12">
+		<div class="col-md-12">
 #*	*##set ( $colCount = $convert.toNumber($colCount) )##
 			<ul class="thumbnails">
 #*	*##set ( $colSpan = 12 / $colCount )#*
 	*##foreach ( $subsection in $subsections )##
-				<li class="span$colSpan">
+				<li class="col-md-$colSpan">
 					<div class="thumbnail">
 #* 		// bring the first image (possibly with a link) to the top of the subsection
 		// (to have a thumbnail with leading image)
@@ -710,7 +710,7 @@
 #*	*##set ( $colSpan = 12 / $colCount )#*
 	*##set ( $i = 1 )#*
 	*##foreach ( $subsection in $subsections )##
-		<div class="span$colSpan">
+		<div class="col-md-$colSpan">
 			$subsection
 		</div>
 #*		*##set ( $mod = $i % $colCount )#*
@@ -751,8 +751,18 @@
 	*##end#*
 
 	*##set ( $carouselId = "carousel$carouselCounter" )##
-	<div id="$carouselId" class="carousel slide">
-		<div class="carousel-inner">
+	<div id="$carouselId" class="carousel slide"  data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+#*      	*##set ( $carouselIndicatorsActiveClass = 'active' )#*
+          	*##foreach ( $subsection in $subsections )##
+                    #set( $num = $velocityCount - 1 )
+                    <li data-target="#$carouselId" data-slide-to="$num" class="$carouselIndicatorsActiveClass"></li>
+#*                  *##set ( $carouselIndicatorsActiveClass = '' )#*
+#*		*##end## /foreach $subsection
+            </ol>
+
+            <div class="carousel-inner"  role="listbox">
 #*	*##set ( $activeClass = 'active' )#*
 	*##foreach ( $subsection in $subsections )##
 			<div class="item $activeClass">
@@ -770,8 +780,15 @@
 #*		*##set ( $activeClass = '' )#*
 	*##end## /foreach $subsection
 		</div>
-		<a class="left carousel-control" href="#$carouselId" data-slide="prev">&lsaquo;</a>
-		<a class="right carousel-control" href="#$carouselId" data-slide="next">&rsaquo;</a>
+                <!-- Controls -->
+                <a class="left carousel-control" href="#$carouselId" role="button" data-slide="prev">
+                  <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#$carouselId" role="button" data-slide="next">
+                  <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+                </a>
 	</div>
 #end#* /carousel
 
@@ -785,7 +802,7 @@
 #macro ( tocSidebar )#*
 
 	*##if ( !$tocSidebarAdded )##
-		<div class="span4">
+		<div class="col-md-4">
 #*			*##tocSidebarContent ()
 		</div>
 #*	*##end##
@@ -1024,7 +1041,7 @@
 		*##if ( $navColIndex == $menuColumns.size() - 1 )#*
 			*##set ( $navSpan = $lastNavSpan )#*
 		*##end##
-				<div class="span$navSpan bottom-nav">
+				<div class="col-md-$navSpan bottom-nav">
 #*					*##listMenu ( $menuCol )
 				</div>
 #*		*##set ( $navColIndex = $navColIndex + 1 )#*
@@ -1387,8 +1404,8 @@
 		*##set ( $bootstrapCssCombined = false )#*
 		*##set ( $bootstrapJsPath = "$resourcePath/js" )#*
 	*##else#*
-		*##set ( $bootstrapVersion = "2.3.2" )#*
-		*##set ( $bootswatchVersion = "2.3.2" )#*
+		*##set ( $bootstrapVersion = "3.3.1" )#*
+		*##set ( $bootswatchVersion = "3.3.1" )#*
 
 		// use Bootstrap theme from BootstrapCDN (loaded over network)
 		*##if ( $config.theme && $config.theme.getValue().startsWith("bootswatch-") )#*
@@ -1398,18 +1415,17 @@
 		*##end#*
 
 		*##if ( $bootswatchTheme )#*
-			*##set ( $bootstrapCssPath = "$protocol//netdna.bootstrapcdn.com/bootswatch/${bootswatchVersion}/$bootswatchTheme" )#*
-			// use Bootstrap 2.3.1 for responsive CDN, because 2.3.2 is not available (CSS did not change 2.3.1 -> 2.3.2)
-			*##set ( $bootstrapCssResponsivePath = "$protocol//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css" )#*
+			*##set ( $bootstrapCssPath = "$protocol//maxcdn.bootstrapcdn.com/bootswatch/${bootswatchVersion}/$bootswatchTheme" )#*
+			*##set ( $bootstrapCssResponsivePath = "$protocol//maxcdn.bootstrapcdn.com/bootstrap/${bootstrapVersion}/css" )#*
 			*##set ( $bootstrapCssCombined = false )#*
 		*##else#*
-			*##set ( $bootstrapCssPath = "$protocol//netdna.bootstrapcdn.com/twitter-bootstrap/${bootstrapVersion}/css" )#*
+			*##set ( $bootstrapCssPath = "$protocol//maxcdn.bootstrapcdn.com/bootstrap/${bootstrapVersion}/css" )#*
 			// since Bootstrap 2.3.2, the CDN hosts a combined version of default Bootstrap
 			*##set ( $bootstrapCssCombined = true )#*
 		*##end#*
 
 
-		*##set ( $bootstrapJsPath = "$protocol//netdna.bootstrapcdn.com/twitter-bootstrap/${bootstrapVersion}/js" )#*
+		*##set ( $bootstrapJsPath = "$protocol//maxcdn.bootstrapcdn.com/bootstrap//${bootstrapVersion}/js" )#*
 
 	*##end##
 
@@ -1425,7 +1441,6 @@
 		<link href="$resourcePath/css/docs.css" rel="stylesheet" />
 #*		*##end##
 		<link href="$resourcePath/css/reflow-skin.css" rel="stylesheet" />
-
 #*
 	// disable CDN-loaded highlightJs altogether if `localResources` is selected.
 	// it will need to be added manually
@@ -1480,14 +1495,14 @@
 ##	// put page and project slugs as classes to the <body>. This allows page-specific CSS customizations.
 	<body class="page-$config.fileId project-$config.projectId" data-spy="scroll" data-offset="60" data-target="${esc.h}toc-scroll-target">
 
-		<div class="navbar navbar-fixed-top#if ( $config.is( "navbarInverse" ) ) navbar-inverse#end">
-			<div class="navbar-inner">
+		<div class="navbar navbar-fixed-top navbar-default#if ( $config.is( "navbarInverse" ) ) navbar-inverse#end">
+## //			<div class="navbar-inner">  3.3.1 non esiste
 				<div class="container">
-					<a class="btn btn-navbar" data-toggle="collapse" data-target="#top-nav-collapse">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</a>
+                                    <div class="navbar-header">
+                                        <button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+                                                <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                                        </button>
+
 #*
 
 	// Insert brand if it is available
@@ -1501,15 +1516,17 @@
 
 		*##if ( $config.brand.getChild( 'href' ) )#*
 			*##currentFileRelativeLink ( $config.brand.getChild( 'href' ).getValue() )##
-					<a class="brand" href="$currentFileRelativeLink">$brandName</a>
+					<a class="navbar-brand" href="$currentFileRelativeLink">$brandName</a>
 #*		*##else##
-					<div class="brand">$brandName</div>
+					<div class="navbar-brand">$brandName</div>
 #*		*##end#*
 	*##end#*
 
 *###
-					<div class="nav-collapse collapse" id="top-nav-collapse">
-						<ul class="nav pull-right">
+
+				</div> <!-- fine navbar header -->
+                                <div class="navbar-collapse collapse" id="navbar">
+                                    <ul class="nav navbar-nav navbar-right">
 #*
 
 	*##if ( $decoration.body.links )#*
@@ -1531,9 +1548,9 @@
 *###
 						</ul>
 					</div><!--/.nav-collapse -->
-				</div>
-			</div>
-		</div>
+				</div> <!--/.container -->
+## //			</div>  3.3.1 non esiste
+		</div> <!--/.navbar navbar-fixed-top -->
 
 	<div class="container">
 
@@ -1552,7 +1569,7 @@
 	*##if  ( $hasBanner )##
 	<div class="jumbotron subhead">
 		<div class="row" id="banner">
-			<div class="span12">
+			<div class="col-md-12">
 				<div class="pull-left">
 #*					*##banner ( $decoration.bannerLeft "bannerLeft" )
 				</div>
@@ -1623,7 +1640,7 @@
 		*##end#*
 *###
 		<div id="toc-bar" class="navbar" data-spy="affix" data-offset-top="$tocOffsetTop">
-			<div class="navbar-inner">
+## //			<div class="navbar-inner">
 				<div id="toc-scroll-target" class="container">
 					<a class="btn btn-navbar" data-toggle="collapse" data-target="#toc-nav-collapse">
 						<span class="icon-bar"></span>
@@ -1637,7 +1654,7 @@
 						</ul>
 					</div>
 				</div>
-			</div>
+## //			</div>  3.3.1 non esiste
 		</div>
 #*	*##end##
 	</header>
@@ -1651,9 +1668,9 @@
 	// non-sectioned body - just output it all	*###
 	<div class="row">
 #*		*##if ( $tocSidebar )##
-		<div class="span8">
+		<div class="col-md-8">
 #*		*##else##
-		<div class="span12">
+		<div class="col-md-12">
 #*		*##end##
 			<div class="body-content">
 #*				*##bodyWithHeader ( $bodyContent )
@@ -1686,7 +1703,7 @@
 		*##if ( $bottomSpanRemainder < 0 )#*
 			*##set ( $bottomSpanRemainder = 1 )#*
 		*##end##
-				<div class="span$bottomSpanRemainder bottom-description">
+				<div class="col-md-$bottomSpanRemainder bottom-description">
 #*		*##if ( $config.bottomDescription.getChildCount() > 0 )##
 					#htmlContent ( $config.bottomDescription.getChildren() )
 #*		*##elseif ( $config.bottomDescription.getAttribute("quote") && 'false' == $config.bottomDescription.getAttribute("quote") )#*
@@ -1723,7 +1740,7 @@
 
 	<div class="container subfooter">
 		<div class="row">
-			<div class="span12">
+			<div class="col-md-12">
 				<p class="pull-right"><a href="#">Back to top</a></p>
 				<p class="copyright">Copyright &copy;#copyright (). All Rights Reserved.</p>
 #*	*##if ( $datePosition == "bottom" || $versionPosition == "bottom" )##
@@ -1754,7 +1771,7 @@
 	*##if ( $localResources )##
 	<script src="$resourcePath/js/jquery.min.js"></script>
 #*	*##else##
-	<script src="$protocol//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="$protocol//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 #*	*##end##
 
 	<script src="$bootstrapJsPath/bootstrap.min.js"></script>
